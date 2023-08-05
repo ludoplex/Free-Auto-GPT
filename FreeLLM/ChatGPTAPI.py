@@ -22,35 +22,33 @@ class ChatGPT(LLM):
         return "custom"
 
     def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
-        if stop is not None:
-            pass
-            #raise ValueError("stop kwargs are not permitted.")
-        #token is a must check
         if self.chatbot is None:
             if self.token is None:
                 raise ValueError("Need a token , check https://chat.openai.com/api/auth/session for get your token")
-            else:
-                try:
-                    if self.plugin_id == []:
-                        self.chatbot = GPT4OpenAI(token=self.token, model=self.model)
-                    else:
-                        self.chatbot = GPT4OpenAI(token=self.token, model=self.model, plugin_ids=self.plugin_id)
-                except:
-                    raise ValueError("Error on create chatbot, check your token, or your model")
-                
+            try:
+                self.chatbot = (
+                    GPT4OpenAI(token=self.token, model=self.model)
+                    if self.plugin_id == []
+                    else GPT4OpenAI(
+                        token=self.token,
+                        model=self.model,
+                        plugin_ids=self.plugin_id,
+                    )
+                )
+            except:
+                raise ValueError("Error on create chatbot, check your token, or your model")
+
         response = ""
-        # OpenAI: 50 requests / hour for each account
         if (self.call >= 45 and self.model == "default") or (self.call >= 23 and self.model == "gpt4"):
             raise ValueError("You have reached the maximum number of requests per hour ! Help me to Improve. Abusing this tool is at your own risk")
-        else:
-            sleep(2)
-            response = self.chatbot(prompt)
-            
-            self.call += 1
-        
+        sleep(2)
+        response = self.chatbot(prompt)
+
+        self.call += 1
+
         #add to history
         self.history_data.append({"prompt":prompt,"response":response})    
-        
+
         return response
 
     @property

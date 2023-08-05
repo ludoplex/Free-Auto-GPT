@@ -622,21 +622,20 @@ class HuggingChatAgent(Agent):
 
         emailHF = os.getenv("emailHF", "your-emailHF")
         pswHF = os.getenv("pswHF", "your-pswHF")
-        if emailHF != "your-emailHF" or pswHF != "your-pswHF":
-            os.environ["emailHF"] = emailHF
-            os.environ["pswHF"] = pswHF
-        else:
+        if emailHF == "your-emailHF" and pswHF == "your-pswHF":
             raise ValueError(
                 "HuggingChat Token EMPTY. Edit the .env file and put your HuggingChat credentials"
             )
 
+        os.environ["emailHF"] = emailHF
+        os.environ["pswHF"] = pswHF
         from .FreeLLM import HuggingChatAPI
         self.llm = HuggingChatAPI.HuggingChat(email=emailHF, psw=pswHF)
 
-            
-        
-            
-            
+
+
+
+
         super().__init__(
             chat_prompt_template=chat_prompt_template,
             run_prompt_template=run_prompt_template,

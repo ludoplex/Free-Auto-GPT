@@ -32,24 +32,19 @@ if select_model == "1":
         )
 
     start_chat = os.getenv("USE_EXISTING_CHAT", False)
-    if os.getenv("USE_GPT4") == "True":
-        model = "gpt-4"
-    else:
-        model = "default"
-
+    model = "gpt-4" if os.getenv("USE_GPT4") == "True" else "default"
     llm = ChatGPTAPI.ChatGPT(token=os.environ["CHATGPT_TOKEN"], model=model)
-              
+
 elif select_model == "2":
     emailHF = os.getenv("emailHF", "your-emailHF")
     pswHF = os.getenv("pswHF", "your-pswHF")
-    if emailHF != "your-emailHF" or pswHF != "your-pswHF":
-        os.environ["emailHF"] = emailHF
-        os.environ["pswHF"] = pswHF
-    else:
+    if emailHF == "your-emailHF" and pswHF == "your-pswHF":
         raise ValueError(
             "HuggingChat Token EMPTY. Edit the .env file and put your HuggingChat credentials"
         )
-    
+
+    os.environ["emailHF"] = emailHF
+    os.environ["pswHF"] = pswHF
     llm = HuggingChatAPI.HuggingChat(email=os.environ["emailHF"], psw=os.environ["pswHF"])
 
 elif select_model == "3":
@@ -65,15 +60,15 @@ elif select_model == "3":
 
 elif select_model == "4":
     GB_TOKEN = os.getenv("BARDCHAT_TOKEN", "your-googlebard-token")
-    
+
     if GB_TOKEN != "your-googlebard-token":
         os.environ["BARDCHAT_TOKEN"] = GB_TOKEN
     else:
         raise ValueError("GoogleBard Token EMPTY. Edit the .env file and put your GoogleBard token")
     cookie_path = os.environ["BARDCHAT_TOKEN"]
     llm=BardChatAPI.BardChat(cookie=cookie_path)
-    
-    
+
+
 
 ####
 

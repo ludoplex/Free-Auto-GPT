@@ -22,34 +22,29 @@ class HuggingChat(LLM):
         return "custom"
 
     def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
-        if stop is not None:
-            pass
-            #raise ValueError("stop kwargs are not permitted.")
-        #token is a must check
         if self.chatbot is None:
             if self.email is None and self.psw is None:
                 ValueError("Email and Password is required, pls check the documentation on github")
-            else: 
-                if self.conversation == "":
-                    sign = Login(self.email, self.psw)
-                    cookies = sign.login()
+            elif self.conversation == "":
+                sign = Login(self.email, self.psw)
+                cookies = sign.login()
 
-                    # Save cookies to usercookies/<email>.json
-                    sign.saveCookies()
+                # Save cookies to usercookies/<email>.json
+                sign.saveCookies()
 
-                    # Create a ChatBot
-                    self.chatbot = hugchat.ChatBot(cookies=cookies.get_dict()) 
-                else:
-                    raise ValueError("Something went wrong")
-            
-        
+                # Create a ChatBot
+                self.chatbot = hugchat.ChatBot(cookies=cookies.get_dict())
+            else:
+                raise ValueError("Something went wrong")
+
+
         sleep(2)
         data = self.chatbot.chat(prompt, temperature=0.5, stream=False)
-    
-        
+
+
         #add to history
         self.history_data.append({"prompt":prompt,"response":data})    
-        
+
         return data
 
     @property
