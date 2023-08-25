@@ -44,24 +44,19 @@ if select_model == "1":
         )
 
     start_chat = os.getenv("USE_EXISTING_CHAT", False)
-    if os.getenv("USE_GPT4") == "True":
-        model = "gpt-4"
-    else:
-        model = "default"
-
+    model = "gpt-4" if os.getenv("USE_GPT4") == "True" else "default"
     llm = ChatGPTAPI.ChatGPT(token=os.environ["CHATGPT_TOKEN"], model=model)
 
 elif select_model == "2":
     emailHF = os.getenv("emailHF", "your-emailHF")
     pswHF = os.getenv("pswHF", "your-pswHF")
-    if emailHF != "your-emailHF" or pswHF != "your-pswHF":
-        os.environ["emailHF"] = emailHF
-        os.environ["pswHF"] = pswHF
-    else:
+    if emailHF == "your-emailHF" and pswHF == "your-pswHF":
         raise ValueError(
             "HuggingChat Token EMPTY. Edit the .env file and put your HuggingChat credentials"
         )
-    
+
+    os.environ["emailHF"] = emailHF
+    os.environ["pswHF"] = pswHF
     llm = HuggingChatAPI.HuggingChat(email=os.environ["emailHF"], psw=os.environ["pswHF"])
 
 elif select_model == "3":
@@ -94,7 +89,7 @@ elif select_model == "4":
     llm = BardChatAPI.BardChat(cookie=cookie_path)
 
 
-    
+
 
 HF_TOKEN = os.getenv("HUGGINGFACE_TOKEN", "your-huggingface-token")
 
@@ -169,12 +164,7 @@ int_max_iterations = input(
 )
 max_iterations = int(int_max_iterations)
 
-if input("Do you want to store the results? (y/n) ") == "y":
-    store_results = True
-else:
-    store_results = False
-
-
+store_results = input("Do you want to store the results? (y/n) ") == "y"
 # If None, will keep on going forever
 max_iterations: Optional[int] = max_iterations
 baby_agi = BabyAGIMod.BabyAGI.from_llm(

@@ -33,25 +33,20 @@ if select_model == "1":
         )
 
     start_chat = os.getenv("USE_EXISTING_CHAT", False)
-    if os.getenv("USE_GPT4") == "True":
-        model = "gpt-4"
-    else:
-        model = "default"
-
+    model = "gpt-4" if os.getenv("USE_GPT4") == "True" else "default"
     agent = agents.ChatGPTAgent(token=os.environ["CHATGPT_TOKEN"], model=model)
 
 
 elif select_model == "2":
     emailHF = os.getenv("emailHF", "your-emailHF")
     pswHF = os.getenv("pswHF", "your-pswHF")
-    if emailHF != "your-emailHF" or pswHF != "your-pswHF":
-        os.environ["emailHF"] = emailHF
-        os.environ["pswHF"] = pswHF
-    else:
+    if emailHF == "your-emailHF" and pswHF == "your-pswHF":
         raise ValueError(
             "HuggingChat Token EMPTY. Edit the .env file and put your HuggingChat credentials"
         )
-    
+
+    os.environ["emailHF"] = emailHF
+    os.environ["pswHF"] = pswHF
     agent = agents.HuggingChatAgent()
 
 elif select_model == "3":
@@ -82,28 +77,26 @@ elif select_model == "4":
     agent = agents.BardChatAgent(token=cookie)
 elif select_model == "5":
     HF_TOKEN = os.getenv("HUGGINGFACE_TOKEN", "your-huggingface-token")
-    if HF_TOKEN != "your-huggingface-token":
-        os.environ["HUGGINGFACEHUB_API_TOKEN"] = HF_TOKEN
-        huggingface_hub.login(token=HF_TOKEN)
-    else:
+    if HF_TOKEN == "your-huggingface-token":
         raise ValueError(
             "HuggingFace Token EMPTY. Edit the .env file and put your HuggingFace token"
         )
 
+    os.environ["HUGGINGFACEHUB_API_TOKEN"] = HF_TOKEN
+    huggingface_hub.login(token=HF_TOKEN)
     from transformers.tools import HfAgent
 
     agent = HfAgent("https://api-inference.huggingface.co/models/bigcode/starcoder")
 
 elif select_model == "6":
     HF_TOKEN = os.getenv("HUGGINGFACE_TOKEN", "your-huggingface-token")
-    if HF_TOKEN != "your-huggingface-token":
-        os.environ["HUGGINGFACEHUB_API_TOKEN"] = HF_TOKEN
-        huggingface_hub.login(token=HF_TOKEN)
-    else:
+    if HF_TOKEN == "your-huggingface-token":
         raise ValueError(
             "HuggingFace Token EMPTY. Edit the .env file and put your HuggingFace token"
         )
 
+    os.environ["HUGGINGFACEHUB_API_TOKEN"] = HF_TOKEN
+    huggingface_hub.login(token=HF_TOKEN)
     from transformers.tools import HfAgent
 
     agent = HfAgent("https://api-inference.huggingface.co/models/bigcode/starcoder")

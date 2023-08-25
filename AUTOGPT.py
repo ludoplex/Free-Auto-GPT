@@ -45,24 +45,19 @@ if select_model == "1":
         )
 
     start_chat = os.getenv("USE_EXISTING_CHAT", False)
-    if os.getenv("USE_GPT4") == "True":
-        model = "gpt-4"
-    else:
-        model = "default"
-
+    model = "gpt-4" if os.getenv("USE_GPT4") == "True" else "default"
     llm = ChatGPTAPI.ChatGPT(token=os.environ["CHATGPT_TOKEN"], model=model)
 
 elif select_model == "2":
     emailHF = os.getenv("emailHF", "your-emailHF")
     pswHF = os.getenv("pswHF", "your-pswHF")
-    if emailHF != "your-emailHF" or pswHF != "your-pswHF":
-        os.environ["emailHF"] = emailHF
-        os.environ["pswHF"] = pswHF
-    else:
+    if emailHF == "your-emailHF" and pswHF == "your-pswHF":
         raise ValueError(
             "HuggingChat Token EMPTY. Edit the .env file and put your HuggingChat credentials"
         )
-    
+
+    os.environ["emailHF"] = emailHF
+    os.environ["pswHF"] = pswHF
     llm = HuggingChatAPI.HuggingChat(email=os.environ["emailHF"], psw=os.environ["pswHF"])
 
 elif select_model == "3":
@@ -144,8 +139,7 @@ def process_csv(
         if output_path is not None:
             instructions += f" Save output to disk at {output_path}"
         try:
-            result = agent.run(instructions)
-            return result
+            return agent.run(instructions)
         except Exception as e:
             return f"Error: {e}"
 
@@ -167,7 +161,6 @@ async def async_load_playwright(url: str) -> str:
         print(">>> PLAYWRIGHT INSTALLED <<<")
     except:
         print(">>> PLAYWRIGHT ALREADY INSTALLED <<<")
-        pass
     results = ""
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
